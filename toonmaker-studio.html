@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ক্যারেক্টার স্টুডিও</title>
+<style>
+:root{--bg:#f4f0ff;--ink:#241b3d;--pan:#fff;--ac:#7b4dff;--ln:#241b3d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1630;--ink:#f1ecff;--pan:#2b2447;--ln:#f1ecff}}
+:root[data-theme="dark"]{--bg:#1b1630;--ink:#f1ecff;--pan:#2b2447;--ln:#f1ecff}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 10px 30px}
+main{width:min(100%,520px)}
+h1{font-size:1.25rem;text-align:center;margin:14px 0 8px}
+#stage{border:3px solid var(--ln);border-radius:18px;overflow:hidden;background:#bfe6ff}
+svg{display:block;width:100%;height:auto}
+#said{min-height:1.6em;margin:6px 2px;font-weight:600}
+.lbl{font-size:.85rem;opacity:.85;margin:10px 2px 4px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,input[type=text]{font:inherit;color:var(--ink);background:var(--pan);border:2px solid var(--ln);border-radius:12px;padding:9px 12px;min-height:44px}
+button{font-weight:600;cursor:pointer}
+button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+button:focus-visible,input:focus-visible{outline:3px solid #3a86ff;outline-offset:2px}
+input[type=text]{flex:1;min-width:0}
+label{display:flex;align-items:center;gap:6px;font-weight:600;font-size:.9rem}
+input[type=color]{width:44px;height:38px;border:2px solid var(--ln);border-radius:10px;padding:0;background:none}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.card{display:flex;flex-direction:column;align-items:center;padding:4px 2px;font-size:.78rem;min-height:0;width:100%}
+.card svg{width:100%}
+.card.on{background:var(--ac);color:#fff}
+.cw{position:relative}
+select{font:inherit;color:var(--ink);background:var(--pan);border:2px solid var(--ln);border-radius:12px;padding:9px 12px;min-height:44px}
+video{width:100%;border-radius:12px;margin-top:8px}
+.x{position:absolute;top:0;right:0;min-height:0;padding:0 7px;border-radius:50%;font-size:.75rem}
+</style>
+</head>
+<body>
+<main>
+<h1>TOONMAKER STUDIO</h1>
+<div class="row" style="justify-content:center;margin-bottom:8px"><button id="dlapp">📥 অ্যাপ ডাউনলোড (HTML ফাইল)</button></div>
+<div id="stage"><svg id="st" viewBox="0 0 400 440" aria-label="ক্যারেক্টার">
+<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#f4fbff"/></linearGradient></defs>
+<g id="cam"><g id="bgL"></g>
+<ellipse id="shd" cx="200" cy="404" rx="52" ry="8" fill="#0003"/>
+<g id="stool" style="display:none"><rect x="-34" y="6" width="68" height="10" rx="4" fill="#8d6e53" stroke="#2b2340" stroke-width="2.5"/><rect x="-28" y="16" width="6" height="56" fill="#8d6e53"/><rect x="22" y="16" width="6" height="56" fill="#8d6e53"/></g>
+<g id="root"></g></g><g id="fx"></g><g id="subg"></g>
+</svg></div>
+<div id="who" class="lbl" style="font-weight:700;text-align:center"></div>
+<div class="row"><button id="vrec">🔴 ভিডিও রেকর্ড</button><button id="vsave" hidden>💾 ভিডিও সেভ</button><button id="shr" hidden>📤 শেয়ার</button></div>
+<video id="vprev" controls playsinline hidden></video>
+<div id="said"></div>
+<div id="ed">
+<div class="lbl">🎬 টাইমলাইন (দৃশ্যে চাপলে এডিট করা যায়)</div>
+<div id="tl" class="row" style="flex-wrap:nowrap;overflow-x:auto;gap:6px"></div>
+<div class="row"><button id="pl">▶ চালান</button><button id="pa">⏸ থামান</button><button id="ps">⏹ বন্ধ</button><button id="un" aria-label="আনডু">↶</button><button id="re" aria-label="রিডু">↷</button></div>
+<div class="row"><button id="sa">➕ নতুন দৃশ্য</button><button id="su">💾 আপডেট</button><button id="sc">⧉ কপি</button><button id="sd" aria-label="মুছুন">🗑</button><button id="sl" aria-label="বামে">◀</button><button id="sr" aria-label="ডানে">▶</button></div>
+<div class="row"><input type="text" id="stxt" placeholder="সাবটাইটেল / সংলাপ"><select id="dur" aria-label="সময়"><option value="2">২ সে.</option><option value="3">৩ সে.</option><option value="4">৪ সে.</option><option value="5">৫ সে.</option><option value="6">৬ সে.</option><option value="8">৮ সে.</option><option value="10">১০ সে.</option></select></div>
+<div class="row"><button id="sk">🎤 রেকর্ড করা কণ্ঠ এই দৃশ্যে লাগান</button></div>
+<div class="lbl">🎥 ক্যামেরা</div>
+<div class="row"><label>জুম <input type="range" id="cz" min="0.6" max="2.5" step="0.05" value="1"></label><button id="cl">⬅</button><button id="cr">➡</button><button id="cu">⬆</button><button id="cd">⬇</button><button id="cf">🎯 মুখ</button><button id="c0">↺</button></div>
+<div class="row"><select id="mv"><option value="none">ক্যামেরা চলন: নেই</option><option value="zin">ধীরে জুম ইন</option><option value="zout">ধীরে জুম আউট</option><option value="left">বামে সরা</option><option value="right">ডানে সরা</option><option value="up">ওপরে সরা</option><option value="down">নিচে সরা</option></select></div>
+<div class="lbl">🏞 ব্যাকগ্রাউন্ড</div>
+<div class="row"><select id="bp"></select><select id="bt"></select><select id="bw"></select></div>
+<div class="row"><label>রং <input type="color" id="bc" value="#bfe6ff"></label><button id="bc0">রং বাদ</button><button id="bu">🖼 ছবি আপলোড</button><input type="file" id="bf" accept="image/*" hidden><button id="bx">ছবি বাদ</button></div>
+<div class="row"><label>ছবি জুম <input type="range" id="biz" min="0.5" max="3" step="0.05" value="1"></label><label>←→ <input type="range" id="bix" min="-200" max="200" value="0"></label><label>↑↓ <input type="range" id="biy" min="-200" max="200" value="0"></label></div>
+<div class="lbl">📤 এক্সপোর্ট ও প্রজেক্ট</div>
+<div class="row"><select id="res"><option value="480">480p</option><option value="720" selected>720p</option><option value="1080">1080p</option></select><button id="ex">🎞 ভিডিও এক্সপোর্ট</button></div>
+<div class="row"><input type="text" id="pname" placeholder="প্রজেক্টের নাম"><button id="pnew">নতুন</button><button id="psv">💾 ফাইলে সেভ</button><button id="pld0">📂 লোড</button><input type="file" id="pld" accept=".json,application/json" hidden></div>
+<div class="lbl">📖 তৈরি গল্পের টেমপ্লেট</div><div class="row" id="tpl"></div>
+</div>
+<div class="lbl">দিক</div><div class="row" id="views"></div>
+<div class="lbl">অভিব্যক্তি</div><div class="row" id="exprs"></div>
+<div class="lbl">অ্যানিমেশন</div><div class="row" id="acts"></div>
+<div class="lbl">মাথা</div><div class="row" id="heads"></div>
+<div class="row"><label>হেলান <input type="range" id="hsl" min="-30" max="30" value="0"></label></div>
+<div class="lbl">চুলের স্টাইল (সবার জন্য)</div><div class="row" id="hairs"></div>
+<div id="cx"></div>
+<div class="lbl">কণ্ঠ ও কথা বলানো</div>
+<div class="row"><select id="vt" aria-label="কণ্ঠ"></select><button id="rec">🎤 রেকর্ড</button><button id="play" disabled>▶ চালান</button></div>
+<div class="row"><input type="text" id="say" placeholder="লিখুন, ক্যারেক্টার বলবে"><button id="saybtn">🗣 বলুন</button></div>
+<div class="lbl" style="opacity:.75">ভিডিওতে আওয়াজ রাখতে নিজের গলা রেকর্ড করে "চালান" দিন। লিখে বলানোর আওয়াজ ভিডিওতে ওঠে না।</div>
+<div class="lbl">রং বদলান</div>
+<div class="row"><label>ত্বক <input type="color" id="csk"></label><label>চুল <input type="color" id="chc"></label><label>জামা <input type="color" id="ctop"></label><label>প্যান্ট/স্কার্ট <input type="color" id="cbot"></label></div>
+<div class="lbl">নিজের নামে সেভ করুন</div>
+<div class="row"><input type="text" id="nm" placeholder="ক্যারেক্টারের নাম"><button id="save">💾 সেভ</button></div>
+<div class="lbl" id="svl" hidden>সেভ করা ক্যারেক্টার</div><div class="grid" id="saved"></div>
+<div class="lbl">২৬টি ক্যারেক্টার: ২০ মানুষ ও ৬ পশুপাখি (চাপলে বেছে নিন)</div><div class="grid" id="gal"></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const L='stroke="#2b2340" stroke-width="2.5" stroke-linejoin="round"';
+const R=(x,y,w,h,r,f)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${f}" ${L}/>`;
+
+// ---------- 20 characters ----------
+const DEF={sk:'#f2c29b',hs:'short',sh:'#ffffff',ou:'p',sv:'',h:1,hd:1,ac:[],ec:'#4a2c1a',hc:'#2b1b12',top:'#3a86ff',bot:'#1d3557',fm:0};
+const CH=[
+ {n:'ছেলে',hs:'spiky'},
+ {n:'মেয়ে',fm:1,sk:'#f5cfa8',hc:'#4a2511',hs:'long',top:'#ff6fa5',ou:'d',len:62,sh:'#c2185b',ac:['rb']},
+ {n:'শিশু ছেলে',h:.68,hd:1.2,top:'#ffbe0b',bot:'#3a86ff',ou:'sh',sh:'#e63946'},
+ {n:'শিশু মেয়ে',h:.68,hd:1.2,sk:'#f5cfa8',hs:'pig',hc:'#241510',top:'#c77dff',bot:'#7b2cbf',ou:'s',len:44,ac:['rb'],sh:'#ff6fa5'},
+ {n:'বাবা',h:1.1,hc:'#1a1a1a',top:'#2a9d8f',bot:'#264653',sv:'l',ac:['m'],sh:'#222222'},
+ {n:'মা',fm:1,h:1.02,sk:'#f1c9a0',hs:'bun',top:'#e76f51',ou:'d',len:96,sh:'#7a3b1e',ac:['bi']},
+ {n:'দাদু',h:.98,sk:'#e6b98f',hs:'bald',hc:'#e8e8e8',top:'#f1f1f1',bot:'#3d5a80',ou:'l',len:100,sv:'l',ac:['g','m','tp'],mc:'#dddddd',sh:'#8d6e63'},
+ {n:'নানি',fm:1,h:.95,sk:'#e6b98f',hs:'bun',hc:'#e0e0e0',top:'#8d5a97',ou:'d',len:100,sv:'l',ac:['g'],sh:'#555555'},
+ {n:'ভাই',sk:'#d9a273',hc:'#3b2a20',top:'#e63946',bot:'#2b2d42',ac:['hb']},
+ {n:'বোন',fm:1,sk:'#d9a273',hs:'bob',hc:'#241510',top:'#4cc9f0',bot:'#f72585',ou:'s',ac:['rb']},
+ {n:'শিক্ষক',h:1.06,hc:'#3b2a20',top:'#f8f9fa',bot:'#495057',sv:'l',ac:['g','tie'],tie:'#d00000',sh:'#222222'},
+ {n:'শিক্ষিকা',fm:1,hs:'bob',hc:'#5c3a21',top:'#6d597a',bot:'#9d8fb0',ou:'s',len:80,sv:'l',ac:['g'],sh:'#333333'},
+ {n:'ছাত্র',h:.9,top:'#ffffff',ac:['tie'],tie:'#e63946'},
+ {n:'ছাত্রী',fm:1,h:.9,sk:'#f5cfa8',hs:'pig',hc:'#241510',top:'#ffffff',ou:'s',len:60,ac:['rb']},
+ {n:'পুলিশ',h:1.08,top:'#b8a47a',bot:'#3b3b3b',sv:'l',ac:['pc'],sh:'#111111'},
+ {n:'ডাক্তার',h:1.04,top:'#ffffff',bot:'#4a6fa5',sv:'l',ac:['dm','st']},
+ {n:'নার্স',fm:1,hs:'bun',hc:'#5c3a21',top:'#7bdff2',ou:'d',len:66,ac:['nc']},
+ {n:'কৃষক',h:1.02,sk:'#c68a5a',hc:'#222222',top:'#d9c8a0',bot:'#8d6e63',ou:'l',len:96,ac:['tp'],sh:'#c68a5a'},
+ {n:'শেফ',h:1.06,top:'#ffffff',bot:'#343a40',sv:'l',ac:['ch','m'],sh:'#222222'},
+ {n:'রাজকন্যা',fm:1,sk:'#f5cfa8',hs:'long',hc:'#f4c430',top:'#9b5de5',ou:'d',len:110,ac:['cr'],sh:'#f4c430',ec:'#2a6f97'}
+].map(o=>Object.assign({},DEF,o));
+const PN=['রাফি','মিতা','টুটুল','পুতুল','করিম সাহেব','রহিমা','আব্দুল মিয়া','সালমা বেগম','সুমন','নীলা','আলম স্যার','রুমা ম্যাডাম','জাহিদ','তানিয়া','অফিসার হাসান','ডা. কবির','সিস্টার শিউলি','জব্বার','বাবুর্চি ফারুক','পরী'];
+const VTS=['boy','girl','kboy','kgirl','man','woman','old','oldw','boy','girl','man','woman','boy','girl','man','man','woman','man','man','girl'];
+CH.forEach((c,i)=>{c.pn=PN[i];c.vt=VTS[i];});
+const AN=o=>Object.assign({},DEF,{hs:'none',h:.95},o);
+CH.push(
+ AN({n:'বিড়াল',pn:'মিনি',an:'cat',sk:'#f4a259',hc:'#e07a1f',top:'#2ec4b6',bot:'#e07a1f',vt:'girl',ec:'#2a9d8f'}),
+ AN({n:'কুকুর',pn:'টমি',an:'dog',sk:'#d9a066',hc:'#8a5a2b',top:'#ffbe0b',bot:'#a36a35',vt:'boy'}),
+ AN({n:'খরগোশ',pn:'বানি',an:'rabbit',sk:'#f5f5f5',hc:'#f5f5f5',top:'#ff6fa5',bot:'#c77dff',vt:'kgirl',ec:'#c2185b'}),
+ AN({n:'ভালুক',pn:'ভালু',an:'bear',sk:'#8d5a3b',hc:'#8d5a3b',top:'#e63946',bot:'#5a3a24',vt:'man',h:1.05}),
+ AN({n:'পাখি',pn:'টুনি',an:'bird',sk:'#4cc9f0',hc:'#4cc9f0',top:'#ffd166',bot:'#f4a259',sh:'#ffb703',vt:'kgirl',h:.85}),
+ AN({n:'বানর',pn:'চঞ্চল',an:'monkey',sk:'#b0773a',hc:'#b0773a',top:'#2a9d8f',bot:'#264653',vt:'kboy'})
+);
+
+// ---------- hair, accessories, expressions ----------
+const H={
+ short:{f:'M-49 -4C-52 -62 52 -62 49 -4C40 -26 22 -34 4 -28C-14 -36 -36 -28 -49 -4Z'},
+ spiky:{f:'M-49 -4L-46 -52L-30 -36L-16 -64L0 -40L16 -64L30 -36L46 -52L49 -4C36 -28 -36 -28 -49 -4Z'},
+ long:{b:'M-54 -6C-64 50 -56 92 -36 100L36 100C56 92 64 50 54 -6C52 -66 -52 -66 -54 -6Z',f:'M-49 -4C-50 -60 50 -60 49 -4C34 -30 8 -34 -8 -24C-24 -28 -40 -22 -49 -4Z'},
+ pig:{b:'M-48 6C-76 14 -80 54 -62 70C-54 52 -50 34 -46 22ZM48 6C76 14 80 54 62 70C54 52 50 34 46 22Z',f:'M-49 -4C-52 -62 52 -62 49 -4C30 -30 6 -34 0 -26C-6 -34 -30 -30 -49 -4Z'},
+ bun:{b:'M-16 -58a16 16 0 1 0 32 0a16 16 0 1 0 -32 0Z',f:'M-49 -4C-52 -62 52 -62 49 -4C40 -26 22 -34 4 -28C-14 -36 -36 -28 -49 -4Z'},
+ bob:{b:'M-54 -6C-60 30 -52 50 -40 52L40 52C52 50 60 30 54 -6C52 -66 -52 -66 -54 -6Z',f:'M-49 -4C-50 -62 50 -62 49 -4Q30 -20 0 -22Q-30 -20 -49 -4Z'},
+ bald:{f:'M-48 -2C-52 -20 -48 -34 -40 -38L-44 -4ZM48 -2C52 -20 48 -34 40 -38L44 -4Z'},
+ curly:{f:'M-50 -4C-62 -26 -50 -62 -28 -56C-22 -74 22 -74 28 -56C50 -62 62 -26 50 -4C40 -26 22 -34 4 -28C-14 -36 -36 -28 -50 -4Z'},
+ pony:{b:'M30 -48C74 -52 84 -6 62 24C60 0 52 -28 30 -34Z',f:'M-49 -4C-52 -62 52 -62 49 -4C40 -26 22 -34 4 -28C-14 -36 -36 -28 -49 -4Z'}
+};
+H.none={};
+const SH=(sd,x)=>`<g transform="translate(${sd?24:0},0)">${x}</g>`;
+const ANI={
+ cat:{b:(sd,c)=>`<path d="M-44 -26L-40 -68L-12 -44ZM44 -26L40 -68L12 -44Z" fill="${c.sk}" ${L}/><path d="M-38 -34L-37 -56L-22 -42ZM38 -34L37 -56L22 -42Z" fill="#ff8fa3"/>`,s:(sd)=>SH(sd,'<path d="M-5 10H5L0 16Z" fill="#ff8fa3"/><path d="M-52 14L-26 18M-52 26L-26 24M52 14L26 18M52 26L26 24" stroke="#2b2340" stroke-width="2" fill="none"/>')},
+ dog:{b:(sd,c)=>`<ellipse cx="-50" cy="8" rx="15" ry="32" fill="${c.hc}" ${L}/><ellipse cx="50" cy="8" rx="15" ry="32" fill="${c.hc}" ${L}/>`,s:(sd)=>SH(sd,`<ellipse cy="18" rx="22" ry="15" fill="#f3dcc0" stroke="#2b2340" stroke-width="2"/><ellipse cy="10" rx="8" ry="5.5" fill="#222"/>`)},
+ rabbit:{b:(sd,c)=>`<ellipse cx="-20" cy="-84" rx="12" ry="36" fill="${c.sk}" ${L}/><ellipse cx="20" cy="-84" rx="12" ry="36" fill="${c.sk}" ${L}/><ellipse cx="-20" cy="-84" rx="5" ry="26" fill="#ffb3c6"/><ellipse cx="20" cy="-84" rx="5" ry="26" fill="#ffb3c6"/>`,s:(sd)=>SH(sd,'<ellipse cy="12" rx="6" ry="4.5" fill="#ff8fa3"/><rect x="-4" y="31" width="8" height="9" rx="2" fill="#fff" stroke="#2b2340" stroke-width="2"/>')},
+ bear:{b:(sd,c)=>`<circle cx="-34" cy="-38" r="15" fill="${c.sk}" ${L}/><circle cx="34" cy="-38" r="15" fill="${c.sk}" ${L}/><circle cx="-34" cy="-38" r="7" fill="#d9a273"/><circle cx="34" cy="-38" r="7" fill="#d9a273"/>`,s:(sd)=>SH(sd,`<ellipse cy="18" rx="20" ry="14" fill="#e8c9a0" stroke="#2b2340" stroke-width="2"/><ellipse cy="11" rx="7" ry="5" fill="#222"/>`)},
+ monkey:{b:(sd,c)=>`<circle cx="-48" cy="6" r="15" fill="${c.sk}" ${L}/><circle cx="48" cy="6" r="15" fill="${c.sk}" ${L}/><circle cx="-48" cy="6" r="8" fill="#f3dcc0"/><circle cx="48" cy="6" r="8" fill="#f3dcc0"/>`,s:(sd)=>SH(sd,'<ellipse cy="16" rx="30" ry="28" fill="#f3dcc0"/><circle cx="-3" cy="12" r="1.8" fill="#222"/><circle cx="3" cy="12" r="1.8" fill="#222"/>')},
+ bird:{s:(sd)=>SH(sd,`<path d="M-9 8H9L0 26Z" fill="#ffb703" stroke="#2b2340" stroke-width="2.5" stroke-linejoin="round"/>`),a:(sd,c)=>`<path d="M0 -50L-9 -74M0 -50L0 -80M0 -50L9 -74" stroke="${c.top}" stroke-width="6" stroke-linecap="round" fill="none"/>`}
+};
+function tailSVG(c,sd){const k=c.an;if(!k)return'';
+ if(k==='rabbit'||k==='bear')return `<circle cx="${sd?-22:-24}" cy="-8" r="10" fill="${c.sk}" ${L}/>`;
+ if(k==='bird')return `<path d="M-12 -10L-46 8L-34 -14L-52 -6L-36 -24Z" fill="${c.top}" ${L}/>`;
+ const d={cat:'M-8 -8Q-62 -4 -52 -74',dog:'M-8 -8Q-58 -22 -48 -64',monkey:'M-8 -8Q-66 24 -46 -34'}[k];
+ return `<path d="${d}" fill="none" stroke="#2b2340" stroke-width="15" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${c.sk}" stroke-width="10" stroke-linecap="round"/>`;}
+const AC={
+ g:s=>s?`<circle cx="22" cy="2" r="13" fill="#bfe9ff55" stroke="#444" stroke-width="2.5"/>`:`<circle cx="-17" cy="2" r="13" fill="#bfe9ff55" stroke="#444" stroke-width="2.5"/><circle cx="17" cy="2" r="13" fill="#bfe9ff55" stroke="#444" stroke-width="2.5"/><path d="M-4 2H4" stroke="#444" stroke-width="2.5"/>`,
+ m:(s,c)=>s?`<path d="M12 18Q26 11 40 18Q26 24 12 18Z" fill="${c.mc||'#222'}"/>`:`<path d="M-17 18Q0 10 17 18Q0 24 -17 18Z" fill="${c.mc||'#222'}"/>`,
+ bi:s=>s?'':`<circle cy="-14" r="3.5" fill="#e63946"/>`,
+ tp:()=>`<path d="M-42 -28C-40 -70 40 -70 42 -28Q0 -38 -42 -28Z" fill="#fff" ${L}/><path d="M-30 -42H30M-36 -34H36" stroke="#8aa" stroke-width="2"/>`,
+ pc:()=>`<path d="M-50 -22C-48 -76 48 -76 50 -22Z" fill="#1d3557" ${L}/><path d="M-58 -20Q0 -6 58 -20L58 -28Q0 -40 -58 -28Z" fill="#0b1d3a" ${L}/><circle cy="-48" r="6" fill="#f4c430"/>`,
+ ch:()=>`<path d="M-36 -40C-56 -62 -34 -92 -12 -78C0 -100 24 -92 26 -78C50 -84 58 -58 36 -40Z" fill="#fff" ${L}/><rect x="-36" y="-44" width="72" height="10" rx="4" fill="#fff" ${L}/>`,
+ dm:()=>`<path d="M-44 -30C-42 -68 42 -68 44 -30Q0 -42 -44 -30Z" fill="#e9f5ff" ${L}/><circle cy="-48" r="9" fill="#cfd8dc" ${L}/><circle cy="-48" r="4" fill="#90a4ae"/>`,
+ nc:()=>`<path d="M-34 -36L34 -36L28 -66L-28 -66Z" fill="#fff" ${L}/><path d="M-3 -62H3V-56H9V-50H3V-44H-3V-50H-9V-56H-3Z" fill="#e63946"/>`,
+ rb:()=>`<path d="M-30 -46L-52 -60L-50 -34ZM-30 -46L-8 -62L-6 -34Z" fill="#ff4d6d" ${L}/><circle cx="-30" cy="-46" r="6" fill="#ff4d6d" ${L}/>`,
+ cr:()=>`<path d="M-30 -52L-32 -80L-14 -64L0 -84L14 -64L32 -80L30 -52Z" fill="#f4c430" ${L}/>`,
+ hb:()=>`<path d="M-47 -22Q0 -50 47 -22" fill="none" stroke="#ffbe0b" stroke-width="7"/>`
+};
+const EX={
+ normal:{bl:'M-26 -14L-9 -14',br:'M9 -14L26 -14',ey:11,w:9,t:0,b:3},
+ happy:{bl:'M-26 -13Q-17 -20 -9 -13',br:'M9 -13Q17 -20 26 -13',ey:9,w:12,t:1,b:10},
+ laugh:{bl:'M-26 -13Q-17 -20 -9 -13',br:'M9 -13Q17 -20 26 -13',ey:7,w:14,t:2,b:16},
+ sad:{bl:'M-26 -10L-9 -19',br:'M9 -19L26 -10',ey:10,w:9,t:-8,b:-5},
+ angry:{bl:'M-26 -20L-9 -11',br:'M9 -11L26 -20',ey:8,w:10,t:-6,b:-3},
+ fear:{bl:'M-26 -12L-9 -22',br:'M9 -22L26 -12',ey:13,w:7,t:-4,b:9},
+ surprised:{bl:'M-26 -24Q-17 -30 -9 -24',br:'M9 -24Q17 -30 26 -24',ey:13,w:6,t:-5,b:14},
+ cry:{bl:'M-26 -10L-9 -19',br:'M9 -19L26 -10',ey:10,w:9,t:-8,b:2}
+};
+
+// ---------- build one character (origin = hip centre, y up is negative) ----------
+function build(c,vw){
+ const sd=vw==='s',bk=vw==='b',sk=c.sk,lng=c.sv==='l';
+ const len=c.len||(c.ou==='l'?100:c.ou==='d'?70:56);
+ const ph1=c.ou==='p'?64:c.ou==='sh'?36:0,ph2=c.ou==='p'?62:0;
+ const lx=sd?5:14,ax=sd?9:34;
+ const leg=(s,x)=>`<g data-p="leg${s}" transform="translate(${x},0)">${R(-11,-4,22,66,11,sk)}${ph1?R(-11.5,-4,23,ph1,11,c.bot):''}<circle r="12" fill="${ph1?c.bot:sk}"/><g data-p="knee${s}" transform="translate(0,62)">${R(-9.5,-4,19,66,9,sk)}${ph2?R(-10,-4,20,ph2,9,c.bot):''}<circle r="9.5" fill="${ph2?c.bot:sk}"/>${sd?`<path d="M-11 54H11Q26 56 26 68V72H-11Z" fill="${c.sh}" ${L}/>`:`<ellipse cy="64" rx="14" ry="9" fill="${c.sh}" ${L}/>`}</g></g>`;
+ const arm=(s,x)=>`<g data-p="arm${s}" transform="translate(${x},-80)">${R(-8,-6,16,52,8,sk)}${R(-8.5,-6,17,lng?52:34,8,c.top)}<g data-p="elb${s}" transform="translate(0,44)">${R(-7,-4,14,48,7,sk)}${lng?R(-7.5,-4,15,40,7,c.top):''}<circle r="7.5" fill="${lng?c.top:sk}"/><circle cy="48" r="9" fill="${sk}" ${L}/><ellipse cx="${s==='R'?-8:8}" cy="50" rx="3.5" ry="6" transform="rotate(${s==='R'?25:-25} ${s==='R'?-8:8} 50)" fill="${sk}" ${L}/></g><circle r="10" fill="${c.top}"/></g>`;
+ const far=s=>sd?`<g style="filter:brightness(.86)">${s}</g>`:s;
+ const tp=sd?'M-17 -86Q0 -92 17 -86L16 -2Q0 6 -16 -2Z':c.fm?'M-28 -86Q0 -94 28 -86L22 -44L28 -2Q0 6 -28 -2L-22 -44Z':'M-31 -86Q0 -94 31 -86L29 -2Q0 6 -29 -2Z';
+ const hw=sd?14:29,sw=(sd?14:30)+len*.28;
+ const skirt=(c.ou==='s'||c.ou==='d'||c.ou==='l')?`<path d="M${-hw} -10L${hw} -10L${sw} ${len}L${-sw} ${len}Z" fill="${c.ou==='d'?c.top:c.bot}" ${L}/>`:'';
+ const tie=(!sd&&!bk&&c.ac.includes('tie'))?`<path d="M0 -84L-6 -70L-3 -40L0 -34L3 -40L6 -70Z" fill="${c.tie||'#d00000'}" ${L}/>`:'';
+ const st=(vw==='f'&&c.ac.includes('st'))?`<path d="M-14 -84Q-18 -40 0 -36Q18 -40 14 -84" fill="none" stroke="#444" stroke-width="3"/><circle cy="-34" r="5" fill="#bbb" ${L}/>`:'';
+ const body=tailSVG(c,sd)+far(arm('L',-ax))+far(leg('L',-lx))+leg('R',lx)+R(-9,-102,18,22,6,sk)+`<path d="${tp}" fill="${c.top}" ${L}/>`+skirt+tie+st+arm('R',ax);
+ // head
+ const hr=H[c.hs]||H.short,hp=(p,f)=>p?`<path d="${p}" fill="${f}" ${L}/>`:'';
+ const er=c.es==='b'?16:c.es==='s'?7:11;
+ const ear=x=>c.es==='e'?`<path d="M${x*.96} -4L${x*1.38} -26L${x*1.02} 18Z" fill="${sk}" ${L}/>`:`<circle cx="${x}" cy="6" r="${er}" fill="${sk}" ${L}/>`;
+ const ears=(c.an||c.es==='n')?'':sd?ear(-8):ear(-46)+ear(46);
+ const an=c.an&&ANI[c.an],ag=k=>an&&an[k]?an[k](sd,c):'';
+ const shape=ag('b')+`<ellipse cx="${sd?-2:0}" rx="${sd?41:46}" ry="50" fill="${sk}" ${L}/>`+ag('s');
+ const ek=c.eys==='b'?1.25:c.eys==='s'?.8:1;
+ const eye=x=>`<g data-p="eye" data-x="${x}" transform="translate(${x},2)"><g transform="scale(${ek})"><ellipse rx="10" ry="11" fill="#fff" ${L}/><circle cx="${sd?3:0}" r="6" fill="${c.ec}"/><circle cx="${sd?3:0}" r="3" fill="#111"/><circle cx="${sd?5:2}" cy="-3" r="2" fill="#fff"/>${c.fm?`<path d="M-10 -5L-14 -9M10 -5L14 -9" stroke="#2b2340" stroke-width="2.5" stroke-linecap="round"/>`:''}${c.eys==='z'?`<path d="M-11 -12H11V-2Q0 -6 -11 -2Z" fill="${sk}" ${L}/>`:''}</g></g>`;
+ const brow=(id,tr)=>`<path data-p="${id}" ${tr} d="${id==='browL'?EX.normal.bl:EX.normal.br}" fill="none" stroke="#2b2340" stroke-width="3.5" stroke-linecap="round"/>`;
+ const NS={s:'<path d="M-3 12Q0 17 3 12" fill="none" stroke="#0007" stroke-width="2.5" stroke-linecap="round"/>',r:`<circle cy="13" r="4.5" fill="${sk}" ${L}/>`,b:`<ellipse cy="13" rx="7" ry="6" fill="${sk}" ${L}/>`,p:`<path d="M0 4L-5 16H5Z" fill="${sk}" ${L}/>`,n:''};
+ const md='M-9 27Q0 27 9 27Q0 30 -9 27Z';
+ const face=sd?`${eye(22)}${brow('browR','transform="translate(5,0)"')}<path d="M38 6Q56 18 40 22" fill="${sk}" ${L}/><circle cx="32" cy="20" r="7" fill="#ff7b8a55"/><path data-p="mouth" d="${md}" transform="translate(24,0) scale(.75,1)" fill="${c.mc2||'#8b2c3a'}" ${L}/>`
+  :`${eye(-17)}${eye(17)}${brow('browL','')}${brow('browR','')}${NS[c.ns||'s']}<circle cx="-30" cy="18" r="7" fill="#ff7b8a55"/><circle cx="30" cy="18" r="7" fill="#ff7b8a55"/><path data-p="mouth" d="${md}" fill="${c.mc2||'#8b2c3a'}" ${L}/>`;
+ const t=sd?'transform="translate(-6,0) scale(.9,1)"':'';
+ let head;
+ if(bk) head=`${hp(hr.b,c.hc)}${ears}${(c.hs==='bald'||c.an)?shape:`<ellipse rx="50" ry="53" fill="${c.hc}" ${L}/>`}`;
+ else head=`<g ${t}>${hp(hr.b,c.hc)}</g>${ears}${shape}${face}<g ${t}>${hp(hr.f,c.hc)}${c.hs==='bald'?'':'<path d="M-30 -44Q-10 -54 12 -50" stroke="#fff7" stroke-width="5" fill="none" stroke-linecap="round"/>'}</g>`;
+ const acs=c.ac.filter(a=>!(bk&&(a==='g'||a==='m'||a==='bi'))).map(a=>AC[a]?AC[a](sd,c):'').join('')+ag('a');
+ return body+`<g data-p="head" transform="translate(0,-134)">${head}${acs}</g>`;
+}
+
+// ---------- state & rig ----------
+const root=$('root');
+let cur,vw='f',hg='',hadj=0,act='idle',expr='normal',T=0,last=performance.now(),X=200,dir=1,blinkAt=2,speaking=false,level=0,P={};
+function bind(){const q=n=>root.querySelector(`[data-p="${n}"]`);
+ P={armR:q('armR'),armL:q('armL'),elbR:q('elbR'),elbL:q('elbL'),legR:q('legR'),legL:q('legL'),kneeR:q('kneeR'),kneeL:q('kneeL'),head:q('head'),mouth:q('mouth'),browL:q('browL'),browR:q('browR'),eyes:[...root.querySelectorAll('[data-p="eye"]')]};}
+function rebuild(){root.innerHTML=build(cur,vw);bind();}
+function ang(s,abd,sw){return vw==='s'?-sw:(s==='R'?-(abd+sw*.3):(abd-sw*.3));}
+
+function frame(now){
+ const dt=Math.min((now-last)/1000,.05);last=now;T+=dt;
+ const sc=cur.h||1,s3=vw==='s';
+ let aR=ang('R',8,0),aL=ang('L',8,0),eR=-8,eL=-8,hR=ang('R',2,0),hL=ang('L',2,0),kR=0,kL=0,by=0,lean=0,hr=0,talk=false;
+ if(act==='idle'){by=Math.sin(T*2)*1.5;hr=Math.sin(T*1.3)*2;}
+ else if(act==='walk'||act==='run'){
+  const run=act==='run',ph=T*(run?10:6.5),s=Math.sin(ph),K=s3?(run?95:55):14,A=run?45:30;
+  hR=ang('R',2,s*A);hL=ang('L',2,-s*A);aR=ang('R',8,-s*A*.95);aL=ang('L',8,s*A*.95);
+  kR=Math.max(0,Math.cos(ph))*K;kL=Math.max(0,-Math.cos(ph))*K;
+  eR=-(run?70:14)-Math.max(0,-s)*8;eL=-(run?70:14)-Math.max(0,s)*8;
+  by=-Math.abs(Math.cos(ph))*(run?9:4);lean=run?8:2;
+  X+=dir*dt*(run?170:80);if(X>330)dir=-1;if(X<70)dir=1;
+ }
+ else if(act==='wave'){aR=s3?-150:-158;eR=Math.sin(T*9)*26;hr=Math.sin(T*3)*3;by=Math.sin(T*2)*1.2;}
+ else if(act==='sit'){by=62;hR=s3?-90:ang('R',10,0);hL=s3?-86:ang('L',10,0);kR=kL=s3?90:0;aR=ang('R',6,22);aL=ang('L',6,18);eR=eL=-60;hr=Math.sin(T*1.5)*2;}
+ else if(act==='talk'){aR=ang('R',34+Math.sin(T*3)*18,0);eR=-35+Math.sin(T*4)*12;hr=Math.sin(T*5)*3;by=Math.sin(T*3)*1.5;talk=true;}
+ aR+=LA.aR;aL+=LA.aL;eR+=LA.eR;eL+=LA.eL;hR+=LA.hR;hL+=LA.hL;fxTick();let hx=1,hy=0;
+ if(hg==='nod'){hy=Math.sin(T*6)*5;hr+=Math.sin(T*6)*5;}
+ if(hg==='no'){hr+=Math.sin(T*6)*14;hx=.9+.1*Math.abs(Math.cos(T*6));}
+ hr+=hadj+(expr==='fear'?Math.sin(T*35)*1.5:0);
+ const AX=s3?9:34,LX=s3?5:14;
+ P.armR.setAttribute('transform',`translate(${AX},-80) rotate(${aR})`);P.armL.setAttribute('transform',`translate(${-AX},-80) rotate(${aL})`);
+ P.elbR.setAttribute('transform',`translate(0,44) rotate(${eR})`);P.elbL.setAttribute('transform',`translate(0,44) rotate(${eL})`);
+ P.legR.setAttribute('transform',`translate(${LX},0) rotate(${hR})`);P.legL.setAttribute('transform',`translate(${-LX},0) rotate(${hL})`);
+ P.kneeR.setAttribute('transform',`translate(0,62) rotate(${kR})`);P.kneeL.setAttribute('transform',`translate(0,62) rotate(${kL})`);
+ P.head.setAttribute('transform',`translate(0,-86) rotate(${hr}) translate(0,${-48+hy}) scale(${(cur.hd||1)*hx},${cur.hd||1})`);
+ const gy=400-134*sc;
+ root.setAttribute('transform',`translate(${X},${gy+by*sc}) rotate(${lean}) scale(${dir*sc},${sc})`);
+ $('shd').setAttribute('cx',X);$('shd').setAttribute('rx',52*sc);
+ const st=$('stool');st.style.display=act==='sit'?'':'none';st.setAttribute('transform',`translate(${X},${gy+62*sc}) scale(${sc})`);
+ // face: blink, expression, mouth
+ blinkAt-=dt;let bl=1;if(blinkAt<0){bl=.1;if(blinkAt<-.12)blinkAt=2+Math.random()*3;}
+ const E=EX[expr];
+ P.eyes.forEach(g=>g.setAttribute('transform',`translate(${g.dataset.x},2) scale(1,${E.ey/11*bl})`));
+ if(P.browL)P.browL.setAttribute('d',E.bl);if(P.browR)P.browR.setAttribute('d',E.br);
+ if(P.mouth){
+  let w=E.w,t=E.t,b=E.b;
+  if(expr==='laugh'||expr==='cry')b=E.b*(.6+.4*Math.abs(Math.sin(T*10)));
+  if(speaking){w=10+level*3;t=-1;b=3+level*18;}
+  else if(talk){w=10;t=-1;b=3+Math.abs(Math.sin(T*11))*14;}
+  P.mouth.setAttribute('d',`M${-w} 27Q0 ${27+t} ${w} 27Q0 ${27+b} ${-w} 27Z`);
+ }
+ requestAnimationFrame(frame);
+}
+
+// ---------- controls ----------
+function mk(par,items,fn){items.forEach(([t,v])=>{const b=document.createElement('button');b.textContent=t;b.dataset.v=v;b.onclick=()=>{fn(v);mark(par,v);};par.appendChild(b);});}
+function mark(par,v){[...par.children].forEach(c=>c.classList.toggle('on',c.dataset.v===v));}
+function setView(v){vw=v;rebuild();mark($('views'),v);}
+function setAct(a){act=a;if(a!=='walk'&&a!=='run'){X=200;dir=1;}setView(a==='walk'||a==='run'||a==='sit'?'s':'f');mark($('acts'),a);}
+mk($('views'),[['সামনে','f'],['পাশ','s'],['পেছনে','b']],setView);
+mk($('exprs'),[['😐 স্বাভাবিক','normal'],['🙂 খুশি','happy'],['😄 হাসি','laugh'],['😞 দুঃখ','sad'],['😢 কান্না','cry'],['😠 রাগ','angry'],['😮 অবাক','surprised'],['😨 ভয়','fear']],v=>expr=v);
+mk($('acts'),[['দাঁড়ানো','idle'],['হাঁটা','walk'],['দৌড়','run'],['বসা','sit'],['হাত নাড়া','wave'],['কথা বলা','talk']],setAct);
+mark($('exprs'),'normal');
+mk($('hairs'),[['ছোট','short'],['খাড়া','spiky'],['লম্বা','long'],['দুই বেণী','pig'],['খোঁপা','bun'],['বব','bob'],['কোঁকড়া','curly'],['পনিটেল','pony'],['টাক','bald']],v=>{cur.hs=v;rebuild();});
+mk($('heads'),[['স্থির',''],['হ্যাঁ (নড)','nod'],['না (নাড়া)','no']],v=>hg=v);mark($('heads'),'');
+$('hsl').oninput=e=>hadj=+e.target.value;
+
+const COL={csk:'sk',chc:'hc',ctop:'top',cbot:'bot'};
+Object.keys(COL).forEach(id=>$(id).oninput=e=>{cur[COL[id]]=e.target.value;rebuild();});
+function setCur(c){cur=JSON.parse(JSON.stringify(c));Object.keys(COL).forEach(id=>$(id).value=cur[COL[id]]);$('nm').value='';$('vt').value=cur.vt||'boy';$('who').textContent=(cur.pn?cur.pn+' — ':'')+cur.n;rebuild();mark($('hairs'),cur.hs);CHIPS.forEach(([r,k,d])=>mark(r,cur[k]===undefined?d:cur[k]));COL2.forEach(([id,k,d])=>{$(id).value=cur[k]||d;});}
+
+// gallery + save
+function card(c,fn){const b=document.createElement('button');b.className='card';const s=c.h||1;b.innerHTML=`<svg viewBox="70 70 260 345"><g transform="translate(200,${400-134*s}) scale(${s})">${build(c,'f')}</g></svg><b>${c.pn||c.n}</b><small>${c.pn?c.n:''}</small>`;b.onclick=fn;return b;}
+CH.forEach(c=>$('gal').append(card(c,()=>setCur(c))));
+const KEY='cs-chars';
+function getSaved(){try{return JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){return[];}}
+function putSaved(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}}
+function renderSaved(){const a=getSaved(),g=$('saved');g.innerHTML='';$('svl').hidden=!a.length;
+ a.forEach((c,i)=>{const w=document.createElement('div');w.className='cw';w.append(card(c,()=>setCur(c)));const x=document.createElement('button');x.textContent='✕';x.className='x';x.setAttribute('aria-label','মুছুন');x.onclick=()=>{a.splice(i,1);putSaved(a);renderSaved();};w.append(x);g.append(w);});}
+$('save').onclick=()=>{const a=getSaved();cur.pn=$('nm').value.trim()||('আমার '+(a.length+1));a.push(JSON.parse(JSON.stringify(cur)));putSaved(a);renderSaved();$('said').textContent='সেভ হয়েছে: '+cur.pn;};
+
+// ---------- voice: record, change voice, lip-sync; video recording ----------
+const VT={man:['পুরুষ',.82,.7],boy:['ছেলে',1,1],girl:['মেয়ে',1.22,1.4],kboy:['শিশু ছেলে',1.38,1.65],kgirl:['শিশু মেয়ে',1.55,1.95],woman:['মহিলা',1.12,1.25],old:['বৃদ্ধ',.78,.6],oldw:['বৃদ্ধা',.92,.85]};
+Object.keys(VT).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent='কণ্ঠ: '+VT[k][0];$('vt').appendChild(o);});
+let ctx,an,buf,mix,rdest,recd,chunks=[],clip=null,meterOn=false;
+function audio(){
+ if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();an=ctx.createAnalyser();an.fftSize=512;buf=new Uint8Array(512);
+  mix=ctx.createGain();rdest=ctx.createMediaStreamDestination();
+  const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=90;
+  const cm=ctx.createDynamicsCompressor();
+  mix.connect(hp);hp.connect(cm);cm.connect(ctx.destination);cm.connect(rdest);cm.connect(an);}
+ if(ctx.state==='suspended')ctx.resume();
+}
+function meter(){if(!meterOn)return;an.getByteTimeDomainData(buf);let q=0;for(const v of buf){const d=(v-128)/128;q+=d*d;}level+=(Math.min(1,Math.sqrt(q/buf.length)*5)-level)*.5;requestAnimationFrame(meter);}
+$('rec').onclick=async()=>{
+ if(recd&&recd.state==='recording'){recd.stop();return;}
+ try{
+  const ms=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+  chunks=[];recd=new MediaRecorder(ms);
+  recd.ondataavailable=e=>chunks.push(e.data);
+  recd.onstop=()=>{ms.getTracks().forEach(t=>t.stop());clip=URL.createObjectURL(new Blob(chunks,{type:recd.mimeType}));$('rec').textContent='🎤 রেকর্ড';$('rec').classList.remove('on');$('play').disabled=false;$('said').textContent='রেকর্ড হয়েছে। "চালান" চাপুন।';};
+  recd.start();$('rec').textContent='⏹ থামান';$('rec').classList.add('on');$('said').textContent='বলুন...';
+ }catch(e){$('said').textContent='মাইক চালু হয়নি। অনুমতি দিন, দরকার হলে লিংকটা সরাসরি ব্রাউজারে খুলুন।';}
+};
+$('play').onclick=()=>{
+ if(!clip)return;audio();
+ const a=new Audio(clip);a.preservesPitch=false;a.mozPreservesPitch=false;a.webkitPreservesPitch=false;a.playbackRate=VT[$('vt').value][1];
+ const src=ctx.createMediaElementSource(a);src.connect(mix);
+ meterOn=true;speaking=true;meter();
+ a.onended=()=>{meterOn=false;speaking=false;level=0;src.disconnect();};
+ a.play();
+};
+$('saybtn').onclick=()=>{
+ const txt=$('say').value.trim();if(!txt)return;
+ $('said').textContent='💬 '+txt;
+ const k=VT[$('vt').value];let voiced=false;
+ if('speechSynthesis' in window){
+  const vs=speechSynthesis.getVoices(),bn=vs.find(v=>/^bn/i.test(v.lang));
+  if(bn||!vs.length){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);if(bn)u.voice=bn;u.lang=bn?bn.lang:'bn-BD';u.pitch=Math.min(2,k[2]);u.rate=k[1]<.9?.85:1;speechSynthesis.speak(u);voiced=true;}
+ }
+ if(!voiced)$('said').textContent+='  (এই ফোনে বাংলা ভয়েস নেই, তাই শুধু মুখ নড়বে)';
+ speaking=true;const id=setInterval(()=>{level=.25+Math.random()*.75;},90);
+ setTimeout(()=>{clearInterval(id);speaking=false;level=0;},Math.max(1500,txt.length*110));
+};
+// video: the stage is drawn onto a canvas ~20 times a second and recorded together with the voice track
+let RW=600,RH=660,vrec,vchunks=[],vblob=null,vtimer,cv,cx,busy=false;
+function drawFrame(){
+ if(busy)return;busy=true;
+ const img=new Image();
+ img.onload=()=>{cx.drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(img.src);busy=false;};
+ img.onerror=()=>{busy=false;};
+ img.src=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString($('st'))],{type:'image/svg+xml;charset=utf-8'}));
+}
+$('vrec').onclick=()=>{
+ if(vrec&&vrec.state==='recording'){vrec.stop();return;}
+ if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){$('said').textContent='এই ব্রাউজারে ভিডিও রেকর্ড হয় না। Chrome ব্যবহার করুন।';return;}
+ audio();
+ cv=document.createElement('canvas');cv.width=RW;cv.height=RH;cx=cv.getContext('2d');
+ const stream=cv.captureStream(20);rdest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+ const mt=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'].find(m=>MediaRecorder.isTypeSupported(m));
+ vchunks=[];vrec=new MediaRecorder(stream,mt?{mimeType:mt}:{});
+ vrec.ondataavailable=e=>{if(e.data.size)vchunks.push(e.data);};
+ vrec.onstop=()=>{clearInterval(vtimer);vblob=new Blob(vchunks,{type:vrec.mimeType||'video/webm'});const v=$('vprev');v.src=URL.createObjectURL(vblob);v.hidden=false;$('vsave').hidden=false;$('shr').hidden=false;$('vrec').textContent='🔴 ভিডিও রেকর্ড';$('vrec').classList.remove('on');};
+ vrec.start(500);vtimer=setInterval(drawFrame,50);
+ $('vrec').textContent='⏹ রেকর্ড বন্ধ';$('vrec').classList.add('on');$('vsave').hidden=true;$('vprev').hidden=true;
+};
+$('vsave').onclick=async()=>{
+ const ext=vblob.type.includes('mp4')?'mp4':'webm';
+ try{const d=window.claude&&await window.claude.use('downloads');if(d){await d.save({filename:'cartoon.'+ext,data:vblob});return;}}catch(e){if(e&&e.code==='declined')return;}
+ $('said').textContent='ভিডিও প্লেয়ারের ⋮ মেনু থেকে ডাউনলোড করুন।';
+};
+
+// ================= Phase 1: scenes, timeline, camera, backgrounds, export, project =================
+const PLACES={village:'গ্রাম',city:'শহর',school:'স্কুল',college:'কলেজ',house:'বাড়ি',room:'ঘর',hospital:'হাসপাতাল',market:'বাজার',forest:'জঙ্গল',river:'নদী',park:'পার্ক'};
+const TM={morning:'সকাল',noon:'দুপুর',evening:'বিকেল',night:'রাত'},WX={clear:'আবহাওয়া: পরিষ্কার',cloud:'মেঘ',rain:'বৃষ্টি',storm:'ঝড়',sun:'রোদ'};
+const GR={village:'#6cbf4a',city:'#8a8f98',school:'#9ad96b',college:'#9ad96b',house:'#9ad96b',room:'#c9a27e',hospital:'#b8c0c8',market:'#c9b79c',forest:'#4e9a3a',river:'#7bc65a',park:'#8bd35a'};
+const SKY={morning:['#ffe0b5','#bfe6ff'],noon:['#7cc8ff','#d6f0ff'],evening:['#ff9e6b','#ffd9a8'],night:['#101436','#2a2f68']};
+const SUN={morning:'<circle cx="70" cy="190" r="32" fill="#ffb703"/>',noon:'<circle cx="330" cy="70" r="30" fill="#ffd60a"/>',evening:'<circle cx="320" cy="230" r="42" fill="#ff7b54"/>',night:'<circle cx="320" cy="70" r="24" fill="#f4f1de"/><circle cx="70" cy="60" r="2" fill="#fff"/><circle cx="150" cy="100" r="2" fill="#fff"/><circle cx="240" cy="40" r="2" fill="#fff"/><circle cx="40" cy="150" r="2" fill="#fff"/>'};
+const tr=(x,k=1)=>`<rect x="${x-5*k}" y="${400-40*k}" width="${10*k}" height="${40*k}" fill="#7a5230"/><circle cx="${x}" cy="${400-52*k}" r="${30*k}" fill="#2e8b3a"/>`;
+const bd=(x,w,h,c)=>{let o=`<rect x="${x}" y="${400-h}" width="${w}" height="${h}" fill="${c}" stroke="#2b2340" stroke-width="2"/>`;for(let y=400-h+12;y<372;y+=26)for(let q=x+10;q<x+w-14;q+=24)o+=`<rect x="${q}" y="${y}" width="10" height="14" fill="#ffe9a6"/>`;return o;};
+const hut=x=>`<rect x="${x}" y="352" width="64" height="48" fill="#e2c391" stroke="#6b4f3a" stroke-width="2"/><polygon points="${x-8},356 ${x+32},318 ${x+72},356" fill="#c9a227" stroke="#6b4f3a" stroke-width="2"/><rect x="${x+24}" y="370" width="16" height="30" fill="#6b4f3a"/>`;
+const palm=x=>`<path d="M${x} 400Q${x+10} 350 ${x+2} 300" stroke="#7a5230" stroke-width="7" fill="none"/><path d="M${x+2} 300Q${x-22} 285 ${x-38} 305M${x+2} 300Q${x-8} 272 ${x-28} 270M${x+2} 300Q${x+26} 285 ${x+42} 305M${x+2} 300Q${x+12} 272 ${x+32} 270" stroke="#2e8b3a" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+const stall=(x,c)=>`<rect x="${x}" y="360" width="70" height="40" fill="#b08968" stroke="#2b2340" stroke-width="2"/><polygon points="${x-6},330 ${x+76},330 ${x+84},360 ${x-14},360" fill="${c}" stroke="#2b2340" stroke-width="2"/><circle cx="${x+18}" cy="352" r="7" fill="#e63946"/><circle cx="${x+38}" cy="352" r="7" fill="#ffbe0b"/><circle cx="${x+56}" cy="352" r="7" fill="#2ec4b6"/>`;
+const ART={
+ village:()=>hut(30)+hut(250)+palm(170)+palm(375),
+ city:()=>bd(0,70,230,'#8d99ae')+bd(80,60,300,'#6c7a96')+bd(150,80,200,'#a5b1c8')+bd(240,60,260,'#7d8aa6')+bd(310,90,180,'#8d99ae'),
+ school:()=>bd(30,250,130,'#ffd166')+'<rect x="140" y="350" width="30" height="50" fill="#8d6e53"/><rect x="310" y="250" width="4" height="150" fill="#555"/><rect x="314" y="252" width="44" height="26" fill="#006a4e"/><circle cx="334" cy="265" r="8" fill="#f42a41"/>',
+ college:()=>bd(20,280,170,'#e07a5f')+'<path d="M110 230Q160 170 210 230Z" fill="#f4f1de" stroke="#2b2340" stroke-width="2"/><rect x="140" y="340" width="40" height="60" fill="#6b4f3a"/>'+tr(350,1.1),
+ house:()=>'<rect x="95" y="330" width="120" height="70" fill="#f3e0c2" stroke="#2b2340" stroke-width="2"/><polygon points="82,334 155,280 228,334" fill="#e5322d" stroke="#2b2340" stroke-width="2"/><rect x="120" y="355" width="22" height="45" fill="#f28c28"/><rect x="170" y="350" width="26" height="24" fill="#bfe3f2" stroke="#2b2340" stroke-width="2"/>'+tr(300,1.2),
+ room:()=>'<rect x="30" y="90" width="120" height="150" rx="6" fill="#bfe3f2" stroke="#6b4f3a" stroke-width="7"/><path d="M90 90V240M30 165H150" stroke="#6b4f3a" stroke-width="4"/><rect x="250" y="110" width="90" height="62" fill="#ffd166" stroke="#6b4f3a" stroke-width="5"/><rect x="270" y="330" width="130" height="70" rx="14" fill="#9b5de5"/><rect x="270" y="300" width="130" height="44" rx="14" fill="#b185db"/>',
+ hospital:()=>bd(50,230,200,'#ffffff')+'<rect x="150" y="190" width="30" height="80" fill="#e63946"/><rect x="125" y="215" width="80" height="30" fill="#e63946"/><rect x="140" y="350" width="50" height="50" fill="#9bc4e2"/>',
+ market:()=>stall(10,'#e63946')+stall(110,'#2ec4b6')+stall(210,'#ffbe0b')+stall(310,'#9b5de5'),
+ forest:()=>tr(30,1.6)+tr(110,1.2)+tr(190,1.8)+tr(280,1.3)+tr(360,1.7),
+ river:()=>'<rect y="300" width="400" height="70" fill="#3d9be0"/><path d="M0 330Q50 320 100 330T200 330T300 330T400 330" stroke="#bfe6ff" stroke-width="3" fill="none"/><path d="M250 318Q290 345 330 318Z" fill="#6b3f1d"/><path d="M272 318Q290 296 312 318Z" fill="#d9a441"/><rect y="370" width="400" height="30" fill="#7bc65a"/>'+tr(40,1)+palm(370),
+ park:()=>'<path d="M60 400V250Q62 205 120 200" fill="none" stroke="#222" stroke-width="4"/><ellipse cx="124" cy="202" rx="14" ry="5" fill="#f4c430" stroke="#222" stroke-width="2"/><rect x="95" y="372" width="70" height="28" fill="#fff" stroke="#222" stroke-width="3"/><path d="M100 372V344H160V372M100 354H160" fill="none" stroke="#222" stroke-width="3"/>'+tr(310,1.1)+tr(355,1.5)
+};
+function bgSVG(o){
+ const sk=SKY[o.time]||SKY.noon,pl=ART[o.place]?o.place:'village';
+ let g=`<defs><linearGradient id="bgs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sk[0]}"/><stop offset="1" stop-color="${sk[1]}"/></linearGradient></defs><rect x="-400" y="-400" width="1200" height="1400" fill="${o.color||(pl==='room'?'#f1e3d3':'url(#bgs)')}"/>`;
+ if(o.img)return g+`<image href="${o.img}" x="0" y="0" width="400" height="440" preserveAspectRatio="xMidYMid slice" transform="translate(${o.ix} ${o.iy}) translate(200 220) scale(${o.iz}) translate(-200 -220)"/>`;
+ if(pl!=='room')g+=SUN[o.time]||'';
+ return g+ART[pl]()+`<rect x="-400" y="400" width="1200" height="600" fill="${GR[pl]}"/>`;
+}
+function fxSVG(o){
+ const tint={night:['#0a0f3c',.38],evening:['#ff7b00',.12],morning:['#fff3b0',.1]}[o.time];
+ let g='<defs><pattern id="rn" width="30" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(12)"><line x1="6" y1="0" x2="6" y2="14" stroke="#cfe8ff" stroke-width="2"/><line x1="20" y1="20" x2="20" y2="34" stroke="#cfe8ff" stroke-width="2"/></pattern></defs>';
+ if(tint)g+=`<rect width="400" height="440" fill="${tint[0]}" opacity="${tint[1]}"/>`;
+ if(['cloud','rain','storm'].includes(o.wx))g+=`<g fill="${o.wx==='cloud'?'#fff':'#6b7280'}" opacity=".9"><ellipse cx="70" cy="50" rx="50" ry="22"/><ellipse cx="120" cy="40" rx="40" ry="20"/><ellipse cx="290" cy="60" rx="55" ry="24"/><ellipse cx="340" cy="46" rx="38" ry="18"/></g>`;
+ if(o.wx==='rain'||o.wx==='storm')g+='<rect width="400" height="440" fill="url(#rn)" opacity=".6"/>';
+ if(o.wx==='storm')g+='<rect width="400" height="440" fill="#1a1a2e" opacity=".25"/><rect id="fl" width="400" height="440" fill="#fff" opacity="0"/>';
+ if(o.wx==='sun')g+='<circle cx="60" cy="50" r="110" fill="#fff3b0" opacity=".3"/>';
+ return g;
+}
+function fxTick(){const r=$('rn');if(r)r.setAttribute('patternTransform',`rotate(12) translate(0 ${(T*700)%40})`);const f=$('fl');if(f){const o=+f.getAttribute('opacity');f.setAttribute('opacity',Math.random()<.012?.75:Math.max(0,o-.06));}}
+function setSub(t){
+ const g=$('subg');t=(t||'').trim();if(!t){g.innerHTML='';return;}
+ const ls=[];let c='';for(const w of t.split(/\s+/)){if((c+' '+w).trim().length>26&&c){ls.push(c);c=w;}else c=(c+' '+w).trim();}ls.push(c);
+ const q=ls.slice(0,3),h=q.length*24+10;
+ g.innerHTML=`<rect x="14" y="${430-h}" width="372" height="${h}" rx="12" fill="#000b"/>`+q.map((l,i)=>`<text x="200" y="${430-h+24+i*24-4}" text-anchor="middle" font-size="18" font-weight="700" fill="#fff" font-family="Hind Siliguri,Noto Sans Bengali,sans-serif">${l.replace(/[<>&]/g,'')}</text>`).join('');
+}
+
+// ----- editor state -----
+let BG={place:'village',time:'noon',wx:'clear',color:'',img:'',iz:1,ix:0,iy:0},cam={z:1,x:0,y:0},sdur=4,smv='none',stxt='';
+let scenes=[],ci=-1,hist=[],hi=-1,playing=false,paused=false,curAudio=null;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function fill(id,o){Object.keys(o).forEach(k=>{const e=document.createElement('option');e.value=k;e.textContent=o[k];$(id).appendChild(e);});}
+fill('bp',PLACES);fill('bt',TM);fill('bw',WX);
+function applyBg(){$('bgL').innerHTML=bgSVG(BG);$('fx').innerHTML=fxSVG(BG);}
+function setCam(){$('cam').setAttribute('transform',`translate(200 220) scale(${cam.z}) translate(${-200-cam.x} ${-220-cam.y})`);}
+function syncUI(){applyBg();setCam();setSub(stxt);$('bp').value=BG.place;$('bt').value=BG.time;$('bw').value=BG.wx;$('stxt').value=stxt;$('dur').value=sdur;$('mv').value=smv;$('cz').value=cam.z;$('biz').value=BG.iz;$('bix').value=BG.ix;$('biy').value=BG.iy;}
+const snap=()=>JSON.parse(JSON.stringify({ch:cur,act,expr,bg:BG,cam,txt:stxt,dur:sdur,mv:smv,vt:$('vt').value}));
+function loadState(s){setCur(s.ch);expr=s.expr;mark($('exprs'),expr);setAct(s.act);BG={...s.bg};cam={...s.cam};sdur=s.dur;smv=s.mv;stxt=s.txt;$('vt').value=s.vt||$('vt').value;syncUI();}
+function renderTL(){
+ const t=$('tl');t.innerHTML='';
+ if(!scenes.length){t.innerHTML='<small>এখনো কোনো দৃশ্য নেই। ক্যারেক্টার ও ব্যাকগ্রাউন্ড সাজিয়ে "➕ নতুন দৃশ্য" চাপুন।</small>';return;}
+ scenes.forEach((s,i)=>{const b=document.createElement('button');b.style.cssText='flex:none;min-width:'+Math.max(70,s.dur*16)+'px';if(i===ci)b.className='on';b.innerHTML=`${i+1}<br><small>${s.ch.pn||s.ch.n} · ${s.dur}s${s.clip?' 🎤':''}</small>`;b.onclick=()=>{ci=i;loadState(s);renderTL();};t.appendChild(b);});
+}
+const PK='cs-proj';
+const proj=()=>JSON.stringify({v:1,name:$('pname').value,scenes:scenes.map(x=>({...x,clip:undefined}))});
+function autosave(){try{localStorage.setItem(PK,proj());}catch(e){}}
+function commit(){const j=JSON.stringify(scenes);if(hist[hi]===j)return;hist=hist.slice(0,hi+1);hist.push(j);hi=hist.length-1;if(hist.length>40){hist.shift();hi--;}renderTL();autosave();}
+function jump(){scenes=JSON.parse(hist[hi]);ci=Math.min(ci,scenes.length-1);renderTL();if(ci>=0)loadState(scenes[ci]);autosave();}
+$('un').onclick=()=>{if(hi>0){hi--;jump();}};
+$('re').onclick=()=>{if(hi<hist.length-1){hi++;jump();}};
+$('sa').onclick=()=>{scenes.splice(ci+1,0,snap());ci++;commit();};
+$('su').onclick=()=>{if(ci<0)return;scenes[ci]={...snap(),clip:scenes[ci].clip};commit();};
+$('sc').onclick=()=>{if(ci<0)return;scenes.splice(ci+1,0,JSON.parse(JSON.stringify(scenes[ci])));ci++;commit();};
+$('sd').onclick=()=>{if(ci<0)return;scenes.splice(ci,1);ci=Math.min(ci,scenes.length-1);commit();if(ci>=0)loadState(scenes[ci]);};
+$('sl').onclick=()=>{if(ci>0){[scenes[ci-1],scenes[ci]]=[scenes[ci],scenes[ci-1]];ci--;commit();}};
+$('sr').onclick=()=>{if(ci>=0&&ci<scenes.length-1){[scenes[ci+1],scenes[ci]]=[scenes[ci],scenes[ci+1]];ci++;commit();}};
+$('sk').onclick=()=>{if(ci<0||!clip){$('said').textContent='আগে একটি দৃশ্য বেছে নিন এবং কণ্ঠ রেকর্ড করুন।';return;}scenes[ci].clip=clip;scenes[ci].vt=$('vt').value;commit();$('said').textContent='কণ্ঠ এই দৃশ্যে লাগানো হয়েছে।';};
+$('stxt').oninput=e=>{stxt=e.target.value;setSub(stxt);};
+$('dur').onchange=e=>sdur=+e.target.value;
+$('mv').onchange=e=>smv=e.target.value;
+// camera
+const cs=()=>{setCam();$('cz').value=cam.z;};
+$('cz').oninput=e=>{cam.z=+e.target.value;setCam();};
+$('cl').onclick=()=>{cam.x-=25;setCam();};$('cr').onclick=()=>{cam.x+=25;setCam();};
+$('cu').onclick=()=>{cam.y-=25;setCam();};$('cd').onclick=()=>{cam.y+=25;setCam();};
+$('cf').onclick=()=>{cam.z=2;cam.x=X-200;cam.y=(400-268*(cur.h||1))-220;cs();};
+$('c0').onclick=()=>{cam={z:1,x:0,y:0};cs();};
+// background
+['bp','bt','bw'].forEach(id=>$(id).onchange=()=>{BG.place=$('bp').value;BG.time=$('bt').value;BG.wx=$('bw').value;applyBg();});
+$('bc').oninput=e=>{BG.color=e.target.value;applyBg();};
+$('bc0').onclick=()=>{BG.color='';applyBg();};
+$('bu').onclick=()=>$('bf').click();
+$('bf').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);BG.img=c.toDataURL('image/jpeg',.75);applyBg();};im.src=r.result;};r.readAsDataURL(f);e.target.value='';};
+$('bx').onclick=()=>{BG.img='';applyBg();};
+[['biz','iz'],['bix','ix'],['biy','iy']].forEach(([id,k])=>$(id).oninput=e=>{BG[k]=+e.target.value;applyBg();});
+// playback
+function playClip(url,vt){audio();const a=new Audio(url);a.preservesPitch=false;a.mozPreservesPitch=false;a.webkitPreservesPitch=false;a.playbackRate=(VT[vt]||VT.boy)[1];const src=ctx.createMediaElementSource(a);src.connect(mix);meterOn=true;speaking=true;meter();a.onended=()=>{meterOn=false;speaking=false;level=0;src.disconnect();};curAudio=a;a.play();}
+const mvp=(m,b,p)=>{if(m==='zin')cam.z=b.z*(1+.5*p);else if(m==='zout')cam.z=b.z*(1.5-.5*p);else if(m==='left')cam.x=b.x-80*p;else if(m==='right')cam.x=b.x+80*p;else if(m==='up')cam.y=b.y-60*p;else if(m==='down')cam.y=b.y+60*p;setCam();};
+async function playAll(){
+ if(playing||!scenes.length)return;playing=true;paused=false;
+ for(let i=0;i<scenes.length&&playing;i++){
+  ci=i;const s=scenes[i];loadState(s);renderTL();const b={...s.cam};
+  if(s.clip)playClip(s.clip,s.vt);else if(s.txt){$('say').value=s.txt;$('saybtn').click();}
+  let el=0;
+  while(el<s.dur&&playing){await sleep(50);if(paused)continue;el+=.05;mvp(s.mv,b,el/s.dur);}
+  if(curAudio){curAudio.pause();curAudio=null;}
+ }
+ playing=false;speaking=false;level=0;if(window.speechSynthesis)speechSynthesis.cancel();
+}
+$('pl').onclick=playAll;
+$('pa').onclick=()=>{paused=!paused;$('pa').textContent=paused?'▶ চালু':'⏸ থামান';};
+$('ps').onclick=()=>{playing=false;paused=false;$('pa').textContent='⏸ থামান';if(curAudio)curAudio.pause();};
+// export & share
+$('ex').onclick=async()=>{
+ if(!scenes.length||playing){$('said').textContent='আগে অন্তত একটি দৃশ্য যোগ করুন।';return;}
+ RH=+$('res').value;RW=Math.round(RH*400/440/2)*2;
+ if(!(vrec&&vrec.state==='recording'))$('vrec').click();
+ await sleep(300);await playAll();await sleep(400);
+ if(vrec&&vrec.state==='recording')$('vrec').click();
+};
+$('shr').onclick=async()=>{
+ if(!vblob)return;const ext=vblob.type.includes('mp4')?'mp4':'webm',f=new File([vblob],'cartoon.'+ext,{type:vblob.type});
+ try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'কার্টুন ভিডিও'});return;}}catch(e){}
+ $('said').textContent='সরাসরি শেয়ার হচ্ছে না। "ভিডিও সেভ" দিয়ে সেভ করে WhatsApp, Facebook বা YouTube অ্যাপ থেকে পাঠান।';
+};
+// project
+function loadProj(txt){try{const o=JSON.parse(txt);scenes=o.scenes||[];$('pname').value=o.name||'';ci=scenes.length?0:-1;hist=[];hi=-1;commit();if(ci>=0)loadState(scenes[0]);}catch(e){$('said').textContent='প্রজেক্ট ফাইল পড়া যায়নি।';}}
+$('pnew').onclick=()=>{scenes=[];ci=-1;hist=[];hi=-1;$('pname').value='';commit();BG={place:'village',time:'noon',wx:'clear',color:'',img:'',iz:1,ix:0,iy:0};cam={z:1,x:0,y:0};stxt='';syncUI();};
+$('psv').onclick=async()=>{try{const d=window.claude&&await window.claude.use('downloads');if(d){await d.save({filename:($('pname').value||'project')+'.json',data:proj()});return;}}catch(e){if(e&&e.code==='declined')return;}$('said').textContent='ফাইলে সেভ করা যায়নি। প্রজেক্ট নিজে থেকেই এই ফোনে অটো-সেভ হয়।';};
+$('pld0').onclick=()=>$('pld').click();
+$('pld').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>loadProj(r.result);r.readAsText(f);e.target.value='';};
+// ready-made story templates: [character, place, time, weather, action, expression, dialogue, seconds]
+const TPL={
+ t1:{n:'স্কুলের প্রথম দিন',s:[[13,'school','morning','clear','wave','happy','আজ স্কুলের প্রথম দিন!',4],[11,'school','morning','clear','talk','happy','সবাই মন দিয়ে পড়ো।',4],[12,'park','noon','clear','run','laugh','ছুটি! চলো খেলি!',4]]},
+ t2:{n:'গ্রামের বৃষ্টির দিন',s:[[17,'village','evening','rain','idle','sad','ইশ, কী বৃষ্টি!',4],[17,'village','evening','storm','talk','surprised','বাজ পড়ছে! ঘরে চলো।',4],[5,'room','night','rain','wave','happy','ঘরে এসো, চা খাবে।',4]]},
+ t3:{n:'ডাক্তারের কাছে',s:[[2,'house','morning','clear','sit','cry','আমার পেট ব্যথা করছে।',4],[15,'hospital','noon','clear','talk','normal','ভয় পেয়ো না, ওষুধ দিচ্ছি।',4],[2,'house','evening','clear','wave','laugh','এখন ভালো লাগছে, ধন্যবাদ!',4]]}
+};
+Object.keys(TPL).forEach(k=>{const b=document.createElement('button');b.textContent=TPL[k].n;b.onclick=()=>{scenes=TPL[k].s.map(a=>({ch:JSON.parse(JSON.stringify(CH[a[0]])),act:a[4],expr:a[5],bg:{place:a[1],time:a[2],wx:a[3],color:'',img:'',iz:1,ix:0,iy:0},cam:{z:1,x:0,y:0},txt:a[6],dur:a[7],mv:'zin',vt:CH[a[0]].vt}));ci=0;hist=[];hi=-1;$('pname').value=TPL[k].n;commit();loadState(scenes[0]);};$('tpl').appendChild(b);});
+function initEditor(){let t=null;try{t=localStorage.getItem(PK);}catch(e){}if(t)loadProj(t);else{syncUI();renderTL();}setInterval(autosave,5000);}
+
+// ================= Phase 2: full character studio controls =================
+const CHIPS=[],COL2=[],LA={aR:0,aL:0,eR:0,eL:0,hR:0,hL:0};
+function chips(title,key,items){const l=document.createElement('div');l.className='lbl';l.textContent=title;const r=document.createElement('div');r.className='row';mk(r,items,v=>{cur[key]=v;if(key==='ou')delete cur.len;rebuild();});$('cx').append(l,r);CHIPS.push([r,key,items[0][1]]);}
+chips('চোখ','eys',[['স্বাভাবিক','n'],['বড়','b'],['ছোট','s'],['ঘুমঘুম','z']]);
+chips('নাক','ns',[['ছোট','s'],['গোল','r'],['বড়','b'],['ছুঁচালো','p'],['নেই','n']]);
+chips('কান','es',[['গোল','r'],['বড়','b'],['ছোট','s'],['ছুঁচালো','e'],['নেই','n']]);
+chips('পোশাক','ou',[['প্যান্ট','p'],['হাফ-প্যান্ট','sh'],['স্কার্ট','s'],['গাউন','d'],['লুঙ্গি','l']]);
+chips('হাতা','sv',[['ছোট হাতা',''],['লম্বা হাতা','l']]);
+const cr=document.createElement('div');cr.className='row';
+[['csh','sh','জুতা','#ffffff'],['cec','ec','চোখ','#4a2c1a'],['cmc','mc2','ঠোঁট','#8b2c3a']].forEach(([id,k,t,d])=>{const lb=document.createElement('label');lb.innerHTML=`${t} <input type="color" id="${id}">`;cr.appendChild(lb);COL2.push([id,k,d]);});
+$('cx').append(cr);
+COL2.forEach(([id,k])=>$(id).oninput=e=>{cur[k]=e.target.value;rebuild();});
+const ll=document.createElement('div');ll.className='lbl';ll.textContent='হাত-পা আলাদা নাড়ান';$('cx').append(ll);
+[['aR','ডান হাত'],['aL','বাম হাত'],['eR','ডান কনুই'],['eL','বাম কনুই'],['hR','ডান পা'],['hL','বাম পা']].forEach(([k,t])=>{const r=document.createElement('div');r.className='row';r.innerHTML=`<label style="width:100%">${t} <input type="range" min="-90" max="90" value="0" data-k="${k}" style="flex:1"></label>`;r.querySelector('input').oninput=e=>{LA[k]=+e.target.value;};$('cx').append(r);});
+const lr=document.createElement('button');lr.textContent='↺ হাত-পা ঠিক করুন';lr.onclick=()=>{Object.keys(LA).forEach(k=>LA[k]=0);$('cx').querySelectorAll('input[data-k]').forEach(i=>i.value=0);};$('cx').append(lr);
+const arw=document.createElement('div');arw.className='row';
+arw.innerHTML='<button id="cnew">➕ নতুন ক্যারেক্টার</button><button id="call">🔁 সব দৃশ্যে লাগান</button><button id="cfs">💾 ফাইলে সেভ</button><button id="cfl">📂 ফাইল থেকে লোড</button><input type="file" id="cff" accept=".json,application/json" hidden>';
+$('cx').append(arw);
+$('cnew').onclick=()=>setCur(Object.assign({},DEF,{n:'নতুন',pn:'নতুন ক্যারেক্টার',vt:'boy'}));
+$('call').onclick=()=>{if(!scenes.length){$('said').textContent='আগে অন্তত একটি দৃশ্য যোগ করুন।';return;}scenes.forEach(x=>{x.ch=JSON.parse(JSON.stringify(cur));x.vt=$('vt').value;});commit();$('said').textContent='সব দৃশ্যে '+(cur.pn||cur.n)+' লাগানো হয়েছে।';};
+$('cfs').onclick=async()=>{try{const d=window.claude&&await window.claude.use('downloads');if(d){await d.save({filename:'character.json',data:JSON.stringify({v:1,char:cur})});return;}}catch(e){if(e&&e.code==='declined')return;}$('said').textContent='ফাইলে সেভ করা যায়নি। "💾 সেভ" দিয়ে এই ফোনে রাখুন।';};
+$('cfl').onclick=()=>$('cff').click();
+$('cff').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);setCur(Object.assign({},DEF,o.char||o));}catch(x){$('said').textContent='ক্যারেক্টার ফাইল পড়া যায়নি।';}};r.readAsText(f);e.target.value='';};
+
+// ----- download the whole app as one HTML file (works offline, can be added to the home screen) -----
+$('dlapp').onclick=async()=>{
+ let h='';
+ try{const r=await fetch(location.href);if(r.ok)h=await r.text();}catch(e){}
+ if(!h.includes('id="root"')||!/<script/i.test(h)){
+  const d=document.documentElement.cloneNode(true);
+  ['root','bgL','fx','subg','views','exprs','acts','heads','hairs','cx','saved','gal','tl','tpl','bp','bt','bw','vt','said','who'].forEach(id=>{const e=d.querySelector('#'+id);if(e)e.innerHTML='';});
+  const v=d.querySelector('#vprev');if(v){v.removeAttribute('src');v.hidden=true;}
+  h='<!DOCTYPE html>\n'+d.outerHTML;
+ }
+ try{const k=window.claude&&await window.claude.use('downloads');if(k){await k.save({filename:'toonmaker-studio.html',data:new Blob([h],{type:'text/html'})});return;}}catch(e){if(e&&e.code==='declined')return;}
+ $('said').textContent='ডাউনলোড চালু হয়নি। ব্রাউজারের মেনু থেকে "Add to Home Screen" ব্যবহার করুন।';
+};
+setCur(CH[0]);setAct('idle');renderSaved();initEditor();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
